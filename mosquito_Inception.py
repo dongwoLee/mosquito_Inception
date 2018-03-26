@@ -92,8 +92,16 @@ def MakeLabelSet(RawLevelList,LevelDir):
 
 #-----------------Make Batch Size ---------
 
-def MakeBatch()
-		
+def MakeBatch(MakeBatchList,length):
+
+	return np.array([MakeBatchList[i:i+length] for i in range(0,len(MakeBatchList),length)])
+
+#-----------------Make Stem Layer ---------
+
+def MakeStemLayer(x,W):
+
+	W1 = tf.random_normal() 
+	L1 = tf.conv2d(x,W,strides=[1,2,2,1],PADDING="VALID")
 
 if __name__ == '__main__':
 
@@ -107,6 +115,17 @@ if __name__ == '__main__':
 	
 	Humidity_Data, RainFall_Data,RainFallDay_Data,AvgTemp_Data,MaxTemp_Data,MinTemp_Data = InputSet(Couple,Equality_128_Input)
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
+
+	X = tf.placeholder(tf.float32, shape=[None, 900])
+    Y = tf.placeholder(tf.float32, shape=[None, 9])
+
+
+
+	
+
+	
+
+
 
 
 
