@@ -98,10 +98,21 @@ def MakeBatch(MakeBatchList,length):
 
 #-----------------Make Stem Layer ---------
 
-def MakeStemLayer(x,W):
+def MakeStemLayer(X): # X is tf.placeholder in main function
 
-	W1 = tf.random_normal() 
-	L1 = tf.conv2d(x,W,strides=[1,2,2,1],PADDING="VALID")
+	W1 = tf.layers.conv2d(inputs=X,filters=16,strides=[2,2],kernel_size=[3,3],padding="VALID",activation = tf.nn.relu)
+	L1 = tf.layers.dropout(inputs=W1,rate=0.7,training = training)
+
+	W2 = tf.layers.conv2d(inputs=L1,filters=16,strides=[1,1],kernel_size=[3,3],padding="VALID",activation=tf.nn.relu)
+	L2 = tf.layers.dropout(inputs=W2,rate=0.7,training = training)
+
+	W3 = tf.layers.conv2d(inputs=L2,filters=32,strides=[1,1],kernel_size=[3,3],padding="SAME",activation=tf.nn.relu)
+	L3 = tf.layers.dropout(inputs=W3,rate=0.7,training = training)
+
+	W4_1 = tf.layers.MaxPooling2d(inputs=L3,pool_size=[3,3],strides=[2,2],padding="VALID")
+	L4_1 = tf.layers.dropout(inputs=W4_1,rate=0.7,training=training)
+
+	
 
 if __name__ == '__main__':
 
@@ -117,17 +128,5 @@ if __name__ == '__main__':
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
 
 	X = tf.placeholder(tf.float32, shape=[None, 900])
-    Y = tf.placeholder(tf.float32, shape=[None, 9])
-
-
-
-	
-
-	
-
-
-
-
-
-
+	Y = tf.placeholder(tf.float32,shape=[None,9])
 
