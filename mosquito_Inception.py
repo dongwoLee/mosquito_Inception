@@ -101,26 +101,59 @@ def MakeBatch(MakeBatchList,length):
 def MakeStemLayer(X): # X is tf.placeholder in main function
 
 	W1 = tf.layers.conv2d(inputs=X,filters=16,strides=[2,2],kernel_size=[3,3],padding="VALID",activation = tf.nn.relu)
-	L1 = tf.layers.dropout(inputs=W1,rate=0.7,training = training)
+	L1 = tf.layers.dropout(inputs=W1,rate=0.7,training = True)
 
 	W2 = tf.layers.conv2d(inputs=L1,filters=16,strides=[1,1],kernel_size=[3,3],padding="VALID",activation=tf.nn.relu)
-	L2 = tf.layers.dropout(inputs=W2,rate=0.7,training = training)
+	L2 = tf.layers.dropout(inputs=W2,rate=0.7,training = True)
 
 	W3 = tf.layers.conv2d(inputs=L2,filters=32,strides=[1,1],kernel_size=[3,3],padding="SAME",activation=tf.nn.relu)
-	L3 = tf.layers.dropout(inputs=W3,rate=0.7,training = training)
+	L3 = tf.layers.dropout(inputs=W3,rate=0.7,training = True)
 
-	W4_1 = tf.layers.MaxPooling2d(inputs=L3,pool_size=[3,3],strides=[2,2],padding="VALID")
-	L4_1 = tf.layers.dropout(inputs=W4_1,rate=0.7,training=training)
+	W4_1 = tf.layers.max_pooling2d(inputs=L3,pool_size=[3,3],strides=[2,2],padding="VALID")
+	L4_1 = tf.layers.dropout(inputs=W4_1,rate=0.7,training=True)
 
+	W4_2 = tf.layers.conv2d(inputs=L3,filters=48,kernel_size=[3,3],strides=[2,2],padding="VALID",activation=tf.nn.relu)
+	L4_2 = tf.layers.dropout(inputs=W4_2,rate=0.7,training=True)
+
+	concat_data_1 = tf.concat([L4_1,L4_2],axis=3)
 	
+	W5_1 = tf.layers.conv2d(inputs=concat_data_1,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L5_1 = tf.layers.dropout(inputs=W5_1,rate=0.7,training=True)
+
+	W5_2 = tf.layers.conv2d(inputs=concat_data_1,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L5_2 = tf.layers.dropout(inputs=W5_2,rate=0.7,training=True)
+
+	W6_1 = tf.layers.conv2d(inputs=L5_1,filters=48,kernel_size=[3,3],strides=[1,1],padding="VALID",activation=tf.nn.relu)
+	L6_1 = tf.layers.dropout(inputs=W6_1,rate=0.7,training=True)
+
+	W6_2 = tf.layers.conv2d(inputs=L5_2,filters=32,kernel_size=[7,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L6_2 = tf.layers.dropout(inputs=W6_2,rate=0.7,training=True)
+
+	W_7 = tf.layers.conv2d(inputs=L6_2,filters=32,kernel_size=[1,7],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L_7 = tf.layers.dropout(inputs=W_7,rate=0.7,training=True)
+
+	W_8 = tf.layers.conv2d(inputs=L_7,filters=48,kernel_size=[3,3],strides=[1,1],padding="VALID",activation=tf.nn.relu)
+	L_8 = tf.layers.dropout(inputs=W_8,rate=0.7,training=True)
+
+	concat_data_2 = tf.concat([L6_1,L_8],axis=3)
+
+	W9_1 = tf.layers.conv2d(inputs=concat_data_2,filters=96,kernel_size=[3,3],strides=[1,1],padding="VALID",activation=tf.nn.relu)
+	L9_1 = tf.layers.dropout(inputs=W9_1,rate=0.7,training=True)
+
+	W9_2 = tf.layers.max_pooling2d(inputs=concat_data_2,pool_size=[3,3],strides=[2,2],padding="VALID")
+	L9_2 = tf.layers.dropout(inputs=W9_2,rate=0.7,training=True)
+
+	concat_data_3 = tf.concat([L9_1,L9_2],axis=3)
+
+	return (concat_data_3)
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -128,5 +161,7 @@ if __name__ == '__main__':
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
 
 	X = tf.placeholder(tf.float32, shape=[None, 900])
+	X_img = tf.reshape(X,[-1,30,30,1])
 	Y = tf.placeholder(tf.float32,shape=[None,9])
 
+	MakeStemLayer(X_img)
