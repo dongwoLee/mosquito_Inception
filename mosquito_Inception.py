@@ -4,6 +4,7 @@ import numpy as np
 import os
 import itertools
 
+
 def MakeCouple(TrainInputDir,TrainLevelDir):
 
 	TrainInput_CsvList = os.listdir(TrainInputDir)
@@ -99,7 +100,7 @@ def MakeBatch(MakeBatchList,length):
 #-----------------Make Stem Layer ---------
 
 def MakeStemLayer(X): # X is tf.placeholder in main function
-
+	
 	W1 = tf.layers.conv2d(inputs=X,filters=16,strides=[2,2],kernel_size=[3,3],padding="VALID",activation = tf.nn.relu)
 	L1 = tf.layers.dropout(inputs=W1,rate=0.7,training = True)
 
@@ -144,24 +145,33 @@ def MakeStemLayer(X): # X is tf.placeholder in main function
 	L9_2 = tf.layers.dropout(inputs=W9_2,rate=0.7,training=True)
 
 	concat_data_3 = tf.concat([L9_1,L9_2],axis=3)
-
+	
 	return (concat_data_3)
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
-	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
+	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
+	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
 	Humidity_Data, RainFall_Data,RainFallDay_Data,AvgTemp_Data,MaxTemp_Data,MinTemp_Data = InputSet(Couple,Equality_128_Input)
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
-
-	X = tf.placeholder(tf.float32, shape=[None, 900])
-	X_img = tf.reshape(X,[-1,30,30,1])
+	
+	# X_img = tf.reshape(X,[-1,30,30,1])
+	X = tf.placeholder(tf.float32, shape=[None,30,30,1])
 	Y = tf.placeholder(tf.float32,shape=[None,9])
 
-	MakeStemLayer(X_img)
+	a=MakeStemLayer(X)
+
+	with tf.Session() as sess:
+		sess.run(tf.global_variables_initializer())
+		t = (sess.run(a, feed_dict={X: Humidity_Data[0].reshape(-1,30,30,1)}))
+		s = (sess.run(a, feed_dict={X: RainFall_Data[0].reshape(-1,30,30,1)}))
+		o = tf.concat([t,s],axis=3)
+		print(o.shape)
+
+
