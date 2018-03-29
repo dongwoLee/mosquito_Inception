@@ -148,13 +148,44 @@ def MakeStemLayer(X): # X is tf.placeholder in main function
 	
 	return (concat_data_3)
 
+def Inception_4A(X):
+
+	W1_1 = tf.layers.average_pooling2d(inputs=X,pool_size=[1,1],strides=[1,1],padding="SAME")
+	L1_1 = tf.layers.dropout(inputs=W1_1,rate=0.7,training=True)
+
+	W1_2 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_2 = tf.layers.dropout(inputs=W1_2,rate=0.7,training=True)
+
+	W1_3 = tf.layers.conv2d(inputs=X,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_3 = tf.layers.dropout(inputs=W1_3,rate=0.7,training=True)
+
+	W1_4 = tf.layers.conv2d(inputs=X,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_4 = tf.layers.dropout(inputs=W1_4,rate=0.7,training=True)
+
+	W2_1 = tf.layers.conv2d(inputs=L1_1,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_1 = tf.layers.dropout(inputs=W2_1,rate=0.7,training=True)
+
+	W2_2 = tf.layers.conv2d(inputs=L1_3,filters=48,kernel_size=[3,3],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_2 = tf.layers.dropout(inputs=W2_2,rate=0.7,training=True)
+
+	W2_3 = tf.layers.conv2d(inputs=L1_4,filters=48,kernel_size=[3,3],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_3 = tf.layers.dropout(inputs=W2_3,rate=0.7,training=True)
+
+	W3 = tf.layers.conv2d(inputs=L2_3,filters=48,kernel_size=[3,3],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3 = tf.layers.dropout(inputs=W3,rate=0.7,training=True)
+
+	concat_Inception_4A = tf.concat([L2_1,L1_2,L2_2,L3],axis=3)
+
+	return concat_Inception_4A
+
+
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -165,13 +196,23 @@ if __name__ == '__main__':
 	X = tf.placeholder(tf.float32, shape=[None,30,30,1])
 	Y = tf.placeholder(tf.float32,shape=[None,9])
 
-	a=MakeStemLayer(X)
+	I4A= tf.placeholder(tf.float32,shape=[None,1,1,1152])
 
+	Stem_Data=MakeStemLayer(X)
+	Inception_4a_Data = Inception_4A(I4A)
+	
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
-		t = (sess.run(a, feed_dict={X: Humidity_Data[0].reshape(-1,30,30,1)}))
-		s = (sess.run(a, feed_dict={X: RainFall_Data[0].reshape(-1,30,30,1)}))
-		o = tf.concat([t,s],axis=3)
-		print(o.shape)
+		humidity_stem = (sess.run(Stem_Data, feed_dict={X: Humidity_Data[0].reshape(-1,30,30,1)}))
+		RainFall_stem= (sess.run(Stem_Data, feed_dict={X: RainFall_Data[0].reshape(-1,30,30,1)}))
+		RainFallDay_stem = (sess.run(Stem_Data, feed_dict={X: RainFallDay_Data[0].reshape(-1,30,30,1)}))
+		AvgTemp_stem = (sess.run(Stem_Data, feed_dict={X: AvgTemp_Data[0].reshape(-1,30,30,1)}))
+		MaxTemp_stem = (sess.run(Stem_Data, feed_dict={X: MaxTemp_Data[0].reshape(-1,30,30,1)}))
+		MinTemp_stem = (sess.run(Stem_Data, feed_dict={X: MinTemp_Data[0].reshape(-1,30,30,1)}))
 
+		All_Stem_Concat= tf.concat([humidity_stem,RainFall_stem,RainFallDay_stem,AvgTemp_stem,MaxTemp_stem,MinTemp_stem],axis=3)
+		a = All_Stem_Concat.eval()
+		Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:a}))
+		print(Inception_4a_Data.shape)
+		
 
