@@ -153,7 +153,7 @@ def Inception_4A(X):
 def Reduction_A(X):
 
 	W1 = tf.layers.conv2d(inputs=X,filters=24,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
-	L1 = tf.layers.dropout(inputs=W1,rate=0.7,traning=True)
+	L1 = tf.layers.dropout(inputs=W1,rate=0.7,training=True)
 
 	W2_1 = tf.layers.max_pooling2d(inputs=X,pool_size=[3,3],strides=[2,2],padding="VALID")
 	L2_1 = tf.layers.dropout(inputs=W2_1,rate=0.7,training=True)
@@ -165,11 +165,80 @@ def Reduction_A(X):
 	L2_3 = tf.layers.dropout(inputs=W2_3,rate=0.7,training=True)
 
 	W3 = tf.layers.conv2d(inputs=L2_3,filters=32,kernel_size=[3,3],strides=[2,2],padding="VALID",activation=tf.nn.relu)
-	L3 = tf.layers.dropout(inputs=L3,rate=0.7,training=True)
+	L3 = tf.layers.dropout(inputs=W3,rate=0.7,training=True)
 
 	concat_Reduction_A = tf.concat([L2_1,L2_2,L3],axis=3)
 
 	return concat_Reduction_A
+
+def Inception_7B(X):
+
+	W1_1 = tf.layers.average_pooling2d(inputs=X,pool_size=[3,3],strides=[1,1],padding="SAME")
+	L1_1 = tf.layers.dropout(inputs=W1_1,rate=0.7,training=True)
+
+	W1_2 = tf.layers.conv2d(inputs=X,filters=24,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_2 = tf.layers.dropout(inputs=W1_2,rate=0.7,training=True)
+
+	W1_3 = tf.layers.conv2d(inputs=X,filters=24,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_3 = tf.layers.dropout(inputs=W1_3,rate=0.7,training=True)
+
+	W2_1 = tf.layers.conv2d(inputs=L1_1,filters=16,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_1 = tf.layers.dropout(inputs=W2_1,rate=0.7,training=True)
+
+	W2_2 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_2 = tf.layers.dropout(inputs=W2_2,rate=0.7,training=True)
+
+	W2_3 = tf.layers.conv2d(inputs=L1_2,filters=28,kernel_size=[1,7],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_3 = tf.layers.dropout(inputs=W2_3,rate=0.7,training=True)
+
+	W2_4 = tf.layers.conv2d(inputs=L1_3,filters=24,kernel_size=[1,7],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_4 = tf.layers.dropout(inputs=W2_4,rate=0.7,training=True)
+
+	W3_1 = tf.layers.conv2d(inputs=L2_3,filters=32,kernel_size=[1,7],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3_1 = tf.layers.dropout(inputs=W3_1,rate=0.7,training=True)
+
+	W3_2 = tf.layers.conv2d(inputs=L2_4,filters=28,kernel_size=[7,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3_2 = tf.layers.dropout(inputs=W3_2,rate=0.7,training=True)
+
+	W4 = tf.layers.conv2d(inputs=L3_2,filters=28,kernel_size=[1,7],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L4 = tf.layers.dropout(inputs=W4,rate=0.7,training=True)
+
+	W5 = tf.layers.conv2d(inputs=L4,filters=32,kernel_size=[7,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L5 = tf.layers.dropout(inputs=W5,rate=0.7,training=True)
+
+	concat_Inception_7B = tf.concat([L2_1,L2_2,L3_1,L5],axis=3)
+
+	return concat_Inception_7B
+
+def Reduction_B(X):
+
+	W1_1 = tf.layers.max_pooling2d(inputs=X,pool_size=[3,3],strides=[2,2],padding="VALID")
+	L1_1 = tf.layers.dropout(inputs=W1_1,rate=0.7,training=True)
+
+	W1_2 = tf.layers.conv2d(inputs=X,filters=24,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_2 = tf.layers.dropout(inputs=W1_2,rate=0.7,training=True)
+
+	W1_3 = tf.layers.conv2d(inputs=X,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_3 = tf.layers.dropout(inputs=W1_3,rate=0.7,training=True)
+
+	W2_1 = tf.layers.conv2d(inputs=L1_2,filters=24,kernel_size=[3,3],strides=[2,2],padding="VALID",activation=tf.nn.relu)
+	L2_1 = tf.layers.dropout(inputs=W2_1,rate=0.7,training=True)
+
+	W2_2 = tf.layers.conv2d(inputs=L1_3,filters=32,kernel_size=[1,7],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_2 = tf.layers.dropout(inputs=W2_2,rate=0.7,training=True)
+
+	W3 = tf.layers.conv2d(inputs=L2_2,filters=40,kernel_size=[7,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3 = tf.layers.dropout(inputs=W3,rate=0.7,training=True)
+
+	W4 = tf.layers.conv2d(inputs=L3,filters=40,kernel_size=[3,3],strides=[2,2],padding="VALID",activation=tf.nn.relu)
+	L4 = tf.layers.dropout(inputs=W4,rate=0.7,training=True)
+
+	concat_Reduction_B = tf.concat([L1_1,L2_1,L4],axis=3)
+
+	return concat_Reduction_B
+
+def Inception_3C(X):
+
 
 
 if __name__ == '__main__':
@@ -191,10 +260,16 @@ if __name__ == '__main__':
 
 	I4A= tf.placeholder(tf.float32,shape=[None,30,30,20])
 	RA = tf.placeholder(tf.float32,shape=[None,30,30,48])
+	I7B = tf.placeholder(tf.float32,shape=[None,14,14,128])
+	RB = tf.placeholder(tf.float32,shape=[None,14,14,128])
+	I3C = tf.placeholder(tf.float32,shape=[None,6,6,192])
 
 	Stem_Data=MakeStemLayer(X)
 	Inception_4a_Data = Inception_4A(I4A)
 	Reduction_A_Data = Reduction_A(RA)
+	Inception_7B_Data = Inception_7B(I7B)
+	Reductin_B_Data = Reduction_B(RB)
+	Inception_3C_Data = Inception_3C(I3C)
 	
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
@@ -210,5 +285,13 @@ if __name__ == '__main__':
 										All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
 		# print(After_Stem_Input.shape)
 		np_After_Stem_Input = After_Stem_Input.eval()
-		Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
+		After_Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
+		print(After_Inception_4a_Data.shape)
+		After_Reduction_A_Data = (sess.run(Reduction_A_Data,feed_dict={RA:After_Inception_4a_Data}))
+		print(After_Reduction_A_Data.shape)
+		After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
+		After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
+		print(After_Reduction_B_Data.shape)
+
+
 		
