@@ -239,15 +239,17 @@ def Reduction_B(X):
 
 def Inception_3C(X):
 
+	return
+
 
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -268,8 +270,12 @@ if __name__ == '__main__':
 	Inception_4a_Data = Inception_4A(I4A)
 	Reduction_A_Data = Reduction_A(RA)
 	Inception_7B_Data = Inception_7B(I7B)
-	Reductin_B_Data = Reduction_B(RB)
+	Reduction_B_Data = Reduction_B(RB)
 	Inception_3C_Data = Inception_3C(I3C)
+
+	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. 
+	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = Reduction_B_Data,labels=Y))
+	optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
 	
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
@@ -292,6 +298,10 @@ if __name__ == '__main__':
 		After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
 		After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
 		print(After_Reduction_B_Data.shape)
+
+
+
+
 
 
 		
