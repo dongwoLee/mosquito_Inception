@@ -239,6 +239,20 @@ def Reduction_B(X):
 
 def Inception_3C(X):
 
+	W1_1 = tf.layers.average_pooling2d(inputs=X,pool_size=[3,3],strides=[1,1],padding="SAME")
+	L1_1 = tf.layers.dropout(inputs=W1,rate=0.7,training=True)
+
+	W1_2 = tf.layers.conv2d(inputs=X,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_2 = tf.layers.dropout(inputs=X,rate=0.7,training=True)
+
+	W1_3 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_3 = tf.layers.dropout(inputs=W1_3,rate=0.7,training=True)
+
+	W1_4 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_4 = tf.layers.dropout(inputs=W1_4,rate=0.7,training=True)
+
+
+
 	return
 
 
