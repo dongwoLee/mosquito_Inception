@@ -278,11 +278,11 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -308,10 +308,18 @@ if __name__ == '__main__':
 
 	W_first_softmax_temp = tf.layers.max_pooling2d(inputs=Reduction_B_Data,pool_size=[6,6],strides=[1,1])
 	L_first_softmax_temp = tf.layers.dropout(inputs=W_first_softmax_temp,rate=0.7,training=True)
-	print(L_first_softmax_temp.shape)
 	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. (단 [?,1,1,filters]) <- 형태로
-	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = L_first_softmax_temp,labels=Y))
-	optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+
+	W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=Inception_3C_Data,pool_size=[6,6],strides=[1,1])
+	L1_After_Inception_3C_Data_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP,rate=0.7,training=True)
+
+	Dropout_Inception_3C_Data_AveP = tf.layers.dropout(inputs=L1_After_Inception_3C_Data_AveP,rate=0.8,training=True)
+
+	first_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = L_first_softmax_temp,labels=Y))
+	first_optimizer = tf.train.AdamOptimizer(0.001).minimize(first_cost)
+
+	second_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=Dropout_Inception_3C_Data_AveP,labels=Y))
+	second_optimizer = tf.train.AdamOptimizer(0.001).minimize(second_cost)
 	
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
@@ -333,8 +341,11 @@ if __name__ == '__main__':
 		After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
 		After_Inception_3C_Data = (sess.run(Inception_3C_Data,feed_dict={I3C:After_Reduction_B_Data}))
 
-		W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=After_Inception_3C_Data,pool_size=[3,3],strides=[1,1],padding="SAME")
-		L1_After_Inception_3C_DAta_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP,rate=0.7,training=True)
+		After_Inception_3C_Data = tf.convert_to_tensor(After_Inception_3C_Data)
+
+		
+
+
 
 
 
