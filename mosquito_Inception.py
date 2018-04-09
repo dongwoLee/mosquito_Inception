@@ -240,22 +240,41 @@ def Reduction_B(X):
 def Inception_3C(X):
 
 	W1_1 = tf.layers.average_pooling2d(inputs=X,pool_size=[3,3],strides=[1,1],padding="SAME")
-	L1_1 = tf.layers.dropout(inputs=W1,rate=0.7,training=True)
+	L1_1 = tf.layers.dropout(inputs=W1_1,rate=0.7,training=True)
 
-	W1_2 = tf.layers.conv2d(inputs=X,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
-	L1_2 = tf.layers.dropout(inputs=X,rate=0.7,training=True)
+	W1_2 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L1_2 = tf.layers.dropout(inputs=W1_2,rate=0.7,training=True)
 
 	W1_3 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
 	L1_3 = tf.layers.dropout(inputs=W1_3,rate=0.7,training=True)
 
-	W1_4 = tf.layers.conv2d(inputs=X,filters=48,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
-	L1_4 = tf.layers.dropout(inputs=W1_4,rate=0.7,training=True)
+	W2_1 = tf.layers.conv2d(inputs=X,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_1 = tf.layers.dropout(inputs=W2_1,rate=0.7,training=True)
 
+	W2_2 = tf.layers.conv2d(inputs=L1_3,filters=56,kernel_size=[1,3],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L2_2 = tf.layers.dropout(inputs=W2_2,rate=0.7,training=True)
 
+	W3_1 = tf.layers.conv2d(inputs=L1_1,filters=32,kernel_size=[1,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3_1 = tf.layers.dropout(inputs=W3_1,rate=0.7,training=True)
 
-	return
+	W3_2 = tf.layers.conv2d(inputs=L1_2,filters=32,kernel_size=[1,3],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3_2 = tf.layers.dropout(inputs=W3_2,rate=0.7,training=True)
 
+	W3_3 = tf.layers.conv2d(inputs=L1_2,filters=32,kernel_size=[3,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3_3 = tf.layers.dropout(inputs=L3_3,rate=0.7,training=True)
 
+	W3_4 = tf.layers.conv2d(inputs=L2_2,filters=64,kernel_size=[3,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L3_4 = tf.layers.dropout(inputs=W3_4,rate=0.7,training=True)
+
+	W4_1 = tf.layers.conv2d(inputs=L3_4,filters=32,kernel_size=[3,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L4_1 = tf.layers.dropout(inputs=W4_1,rate=0.7,training=True)
+
+	W4_2 = tf.layers.conv2d(inputs=L3_4,filters=32,kernel_size=[1,3],strides=[1,1],padding="SAME",activation=tf.nn.relu)
+	L4_2 = tf.layers.dropout(inputs=W4_2,rate=0.7,training=True)
+
+	cocnat_Inception_3C = tf.concat([L3_1,L2_1,L3_2,L3_3,L4_1,L4_2],axis=3)
+
+	return cocnat_Inception_3C
 
 if __name__ == '__main__':
 
