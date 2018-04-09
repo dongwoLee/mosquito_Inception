@@ -261,7 +261,7 @@ def Inception_3C(X):
 	L3_2 = tf.layers.dropout(inputs=W3_2,rate=0.7,training=True)
 
 	W3_3 = tf.layers.conv2d(inputs=L1_2,filters=32,kernel_size=[3,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
-	L3_3 = tf.layers.dropout(inputs=L3_3,rate=0.7,training=True)
+	L3_3 = tf.layers.dropout(inputs=W3_3,rate=0.7,training=True)
 
 	W3_4 = tf.layers.conv2d(inputs=L2_2,filters=64,kernel_size=[3,1],strides=[1,1],padding="SAME",activation=tf.nn.relu)
 	L3_4 = tf.layers.dropout(inputs=W3_4,rate=0.7,training=True)
@@ -310,7 +310,7 @@ if __name__ == '__main__':
 	L_first_softmax_temp = tf.layers.dropout(inputs=W_first_softmax_temp,rate=0.7,training=True)
 	print(L_first_softmax_temp.shape)
 	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. (단 [?,1,1,filters]) <- 형태로
-	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = L_first_softmax_tempa,labels=Y))
+	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = L_first_softmax_temp,labels=Y))
 	optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
 	
 	with tf.Session() as sess:
@@ -328,12 +328,13 @@ if __name__ == '__main__':
 		# print(After_Stem_Input.shape)
 		np_After_Stem_Input = After_Stem_Input.eval()
 		After_Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
-		print(After_Inception_4a_Data.shape)
 		After_Reduction_A_Data = (sess.run(Reduction_A_Data,feed_dict={RA:After_Inception_4a_Data}))
-		print(After_Reduction_A_Data.shape)
 		After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
 		After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
-		print(After_Reduction_B_Data.shape)
+		After_Inception_3C_Data = (sess.run(Inception_3C_Data,feed_dict={I3C:After_Reduction_B_Data}))
+
+		W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=After_Inception_3C_Data,pool_size=[3,3],strides=[1,1],padding="SAME")
+		L1_After_Inception_3C_DAta_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP,rate=0.7,training=True)
 
 
 
