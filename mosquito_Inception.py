@@ -3,6 +3,7 @@ import csv
 import numpy as np
 import os
 import itertools
+from numpy import array
 
 
 def MakeCouple(TrainInputDir,TrainLevelDir):
@@ -93,9 +94,14 @@ def MakeLabelSet(RawLevelList,LevelDir):
 
 #-----------------Make Batch Size ---------
 
-def MakeBatch(MakeBatchList,length):
+def MakeBatch(DataList,ListLength,BatchSize):
 
-	return np.array([MakeBatchList[i:i+length] for i in range(0,len(MakeBatchList),length)])
+    Output = []
+    for i in range(0,ListLength,BatchSize):
+        Output.append(DataList[i:i+BatchSize])
+    Output = array(Output)
+
+    return Output
 
 #-----------------Make Stem Layer ---------
 
@@ -278,16 +284,20 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
-	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
+	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
+	TestLevel_Data = "/Users/keedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
 	Humidity_Data, RainFall_Data,RainFallDay_Data,AvgTemp_Data,MaxTemp_Data,MinTemp_Data = InputSet(Couple,Equality_128_Input)
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
+
+	batch_size = 20
+	batch_hum = MakeBatch(Humidity_Data,1000,batch_size)
+	print(len(batch_hum))
 	
 	# X_img = tf.reshape(X,[-1,30,30,1])
 	X = tf.placeholder(tf.float32, shape=[None,30,30,1])
