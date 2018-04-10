@@ -284,11 +284,11 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/keedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -296,8 +296,14 @@ if __name__ == '__main__':
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
 
 	batch_size = 20
-	batch_hum = MakeBatch(Humidity_Data,1000,batch_size)
-	print(len(batch_hum))
+	total_batch = 50
+
+	Batch_Humidity = MakeBatch(Humidity_Data,1000,batch_size)
+	Batch_RainFall = MakeBatch(Humidity_Data,1000,batch_size)
+	Batch_RaiinFallDay = MakeBatch(Humidity_Data,1000,batch_size)
+	Batch_AvgTemp = MakeBatch(Humidity_Data,1000,batch_size)
+	Batch_MaxTemp = MakeBatch(Humidity_Data,1000,batch_size)
+	Batch_MinTemp = MakeBatch(Humidity_Data,1000,batch_size)
 	
 	# X_img = tf.reshape(X,[-1,30,30,1])
 	X = tf.placeholder(tf.float32, shape=[None,30,30,1])
@@ -333,25 +339,33 @@ if __name__ == '__main__':
 	
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
-		humidity_stem = (sess.run(Stem_Data, feed_dict={X: Humidity_Data[0].reshape(-1,30,30,1)}))
-		RainFall_stem= (sess.run(Stem_Data, feed_dict={X: RainFall_Data[0].reshape(-1,30,30,1)}))
-		RainFallDay_stem = (sess.run(Stem_Data, feed_dict={X: RainFallDay_Data[0].reshape(-1,30,30,1)}))
-		AvgTemp_stem = (sess.run(Stem_Data, feed_dict={X: AvgTemp_Data[0].reshape(-1,30,30,1)}))
-		MaxTemp_stem = (sess.run(Stem_Data, feed_dict={X: MaxTemp_Data[0].reshape(-1,30,30,1)}))
-		MinTemp_stem = (sess.run(Stem_Data, feed_dict={X: MinTemp_Data[0].reshape(-1,30,30,1)}))
 
-		All_Stem_Concat_axis2= tf.concat([humidity_stem,RainFall_stem,RainFallDay_stem,AvgTemp_stem,MaxTemp_stem,MinTemp_stem],axis=2)
-		After_Stem_Input = tf.concat([All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,
-										All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
-		# print(After_Stem_Input.shape)
-		np_After_Stem_Input = After_Stem_Input.eval()
-		After_Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
-		After_Reduction_A_Data = (sess.run(Reduction_A_Data,feed_dict={RA:After_Inception_4a_Data}))
-		After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
-		After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
-		After_Inception_3C_Data = (sess.run(Inception_3C_Data,feed_dict={I3C:After_Reduction_B_Data}))
+		for epoch in range(1):
 
-		After_Inception_3C_Data = tf.convert_to_tensor(After_Inception_3C_Data)
+			total_cost = 0 
+
+			for i in range(total_batch):
+				humidity_stem = (sess.run(Stem_Data, feed_dict={X: Humidity_Data[i].reshape(-1,30,30,1)}))
+				RainFall_stem= (sess.run(Stem_Data, feed_dict={X: RainFall_Data[i].reshape(-1,30,30,1)}))
+				RainFallDay_stem = (sess.run(Stem_Data, feed_dict={X: RainFallDay_Data[i].reshape(-1,30,30,1)}))
+				AvgTemp_stem = (sess.run(Stem_Data, feed_dict={X: AvgTemp_Data[i].reshape(-1,30,30,1)}))
+				MaxTemp_stem = (sess.run(Stem_Data, feed_dict={X: MaxTemp_Data[i].reshape(-1,30,30,1)}))
+				MinTemp_stem = (sess.run(Stem_Data, feed_dict={X: MinTemp_Data[i].reshape(-1,30,30,1)}))
+
+				All_Stem_Concat_axis2= tf.concat([humidity_stem,RainFall_stem,RainFallDay_stem,AvgTemp_stem,MaxTemp_stem,MinTemp_stem],axis=2)
+				After_Stem_Input = tf.concat([All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,
+												All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
+				# print(After_Stem_Input.shape)
+				np_After_Stem_Input = After_Stem_Input.eval()
+				After_Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
+				After_Reduction_A_Data = (sess.run(Reduction_A_Data,feed_dict={RA:After_Inception_4a_Data}))
+				After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
+				After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
+				After_Inception_3C_Data = (sess.run(Inception_3C_Data,feed_dict={I3C:After_Reduction_B_Data}))
+
+				After_Inception_3C_Data = tf.convert_to_tensor(After_Inception_3C_Data)
+
+		# for epoch in range(1):
 
 		
 
