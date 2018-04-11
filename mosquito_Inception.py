@@ -284,11 +284,11 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -300,39 +300,55 @@ if __name__ == '__main__':
 
 	Batch_Humidity = MakeBatch(Humidity_Data,1000,batch_size)
 	Batch_RainFall = MakeBatch(RainFall_Data,1000,batch_size)
-	Batch_RaiinFallDay = MakeBatch(RainFallDay_Data,1000,batch_size)
+	Batch_RainFallDay = MakeBatch(RainFallDay_Data,1000,batch_size)
 	Batch_AvgTemp = MakeBatch(AvgTemp_Data,1000,batch_size)
 	Batch_MaxTemp = MakeBatch(MaxTemp_Data,1000,batch_size)
 	Batch_MinTemp = MakeBatch(MinTemp_Data,1000,batch_size)
 
 	Batch_Level = MakeBatch(LevelSet,1000,batch_size)
-	
+	print(Batch_Level[0].shape)
 	# X_img = tf.reshape(X,[-1,30,30,1])
-	X1 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	X2 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	X3 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	X4 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	X5 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	X6 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	X1 = tf.placeholder(tf.float32, shape=[None,900])
+	X1_img = tf.reshape(X1,[-1,30,30,1])
+	X2 = tf.placeholder(tf.float32, shape=[None,900])
+	X2_img = tf.reshape(X2,[-1,30,30,1])
+	X3 = tf.placeholder(tf.float32, shape=[None,900])
+	X3_img = tf.reshape(X3,[-1,30,30,1])
+	X4 = tf.placeholder(tf.float32, shape=[None,900])
+	X4_img = tf.reshape(X4,[-1,30,30,1])
+	X5 = tf.placeholder(tf.float32, shape=[None,900])
+	X5_img = tf.reshape(X5,[-1,30,30,1])
+	X6 = tf.placeholder(tf.float32, shape=[None,900])
+	X6_img = tf.reshape(X6,[-1,30,30,1])
 	Y = tf.placeholder(tf.float32,shape=[None,9])
 
-	I4A= tf.placeholder(tf.float32,shape=[None,30,30,20])
-	RA = tf.placeholder(tf.float32,shape=[None,30,30,48])
-	I7B = tf.placeholder(tf.float32,shape=[None,14,14,128])
-	RB = tf.placeholder(tf.float32,shape=[None,14,14,128])
-	I3C = tf.placeholder(tf.float32,shape=[None,6,6,192])
+	keep_prob = tf.placeholder(tf.float32)
 
-	Stem_Data_humidity = MakeStemLayer(X1) #stem data 6개
-	Stem_Data_RainFall = MakeStemLayer(X2)
+	# I4A= tf.placeholder(tf.float32,shape=[None,30,30,20])
+	# RA = tf.placeholder(tf.float32,shape=[None,30,30,48])
+	# I7B = tf.placeholder(tf.float32,shape=[None,14,14,128])
+	# RB = tf.placeholder(tf.float32,shape=[None,14,14,128])
+	# I3C = tf.placeholder(tf.float32,shape=[None,6,6,192])
 
-	Inception_4a_Data = Inception_4A(I4A)
-	Reduction_A_Data = Reduction_A(RA)
-	Inception_7B_Data = Inception_7B(I7B)
-	Reduction_B_Data = Reduction_B(RB)
-	Inception_3C_Data = Inception_3C(I3C)
+	Stem_Data_humidity = MakeStemLayer(X1_img) #stem data 6개
+	Stem_Data_RainFall = MakeStemLayer(X2_img)
+	Stem_Data_RainFallDay = MakeStemLayer(X3_img)
+	Stem_Data_AvgTemp = MakeStemLayer(X4_img)
+	Stem_Data_MaxTemp = MakeStemLayer(X5_img)
+	Stem_Data_MinTemp = MakeStemLayer(X6_img)
 
+	All_Stem_Concat_axis2 = tf.concat([Stem_Data_humidity,Stem_Data_RainFall,Stem_Data_RainFallDay,Stem_Data_AvgTemp,Stem_Data_MaxTemp,Stem_Data_MinTemp],axis=2)
+	After_Stem_Input = tf.concat([All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
+
+	Inception_4a_Data = Inception_4A(After_Stem_Input)
+	Reduction_A_Data = Reduction_A(Inception_4a_Data)
+	Inception_7B_Data = Inception_7B(Reduction_A_Data)
+	Reduction_B_Data = Reduction_B(Inception_7B_Data)
+	Inception_3C_Data = Inception_3C(Reduction_B_Data)
+
+# 	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. (단 [?,1,1,filters]) <- 형태로
 	W_first_softmax_temp = tf.layers.max_pooling2d(inputs=Reduction_B_Data,pool_size=[6,6],strides=[1,1])
-	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. (단 [?,1,1,filters]) <- 형태로
+	L_first_softmax_temp = tf.layers.dropout(inputs=W_first_softmax_temp,rate=0.7,training=True)
 
 	W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=Inception_3C_Data,pool_size=[6,6],strides=[1,1])
 	L1_After_Inception_3C_Data_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP,rate=0.7,training=True)
@@ -344,45 +360,72 @@ if __name__ == '__main__':
 
 	cost_result = 0.7*second_cost+0.3*first_cost
 	optimizer = tf.train.AdamOptimizer(0.0001).minimize(cost_result)
-	
-	with tf.Session() as sess:
-		sess.run(tf.global_variables_initializer())
 
-		for epoch in range(1):
+	init = tf.global_variables_initializer()
+	sess = tf.Session()
+	sess.run(init)
 
-			total_cost = 0 
+	for epoch in range(1):
 
-			for i in range(total_batch):
-				humidity_stem = (sess.run(Stem_Data, feed_dict={X1: Humidity_Data[i].reshape(-1,30,30,1)}))
-				RainFall_stem= (sess.run(Stem_Data, feed_dict={X2: RainFall_Data[i].reshape(-1,30,30,1)}))
-				RainFallDay_stem = (sess.run(Stem_Data, feed_dict={X3: RainFallDay_Data[i].reshape(-1,30,30,1)}))
-				AvgTemp_stem = (sess.run(Stem_Data, feed_dict={X4: AvgTemp_Data[i].reshape(-1,30,30,1)}))
-				MaxTemp_stem = (sess.run(Stem_Data, feed_dict={X5: MaxTemp_Data[i].reshape(-1,30,30,1)}))
-				MinTemp_stem = (sess.run(Stem_Data, feed_dict={X6: MinTemp_Data[i].reshape(-1,30,30,1)}))
+		total_cost = 0
 
-				All_Stem_Concat_axis2= tf.concat([humidity_stem,RainFall_stem,RainFallDay_stem,AvgTemp_stem,MaxTemp_stem,MinTemp_stem],axis=2)
-				After_Stem_Input = tf.concat([All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,
-												All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
-				# print(After_Stem_Input.shape)
-				np_After_Stem_Input = After_Stem_Input.eval()
-				After_Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
-				After_Reduction_A_Data = (sess.run(Reduction_A_Data,feed_dict={RA:After_Inception_4a_Data}))
-				After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
-				After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
-				After_Inception_3C_Data = (sess.run(Inception_3C_Data,feed_dict={I3C:After_Reduction_B_Data}))
+		for i in range(total_batch):
+			
+			Batch_Humidity = Batch_Humidity[i]
+			Batch_RainFall = Batch_RainFall[i]
+			Batch_RainFallDay = Batch_RainFallDay[i]
+			Batch_AvgTemp = Batch_AvgTemp[i]
+			Batch_MaxTemp = Batch_MaxTemp[i]
+			Batch_MinTemp = Batch_MinTemp[i]
+			Batch_Level = Batch_Level[i]
+			
+			_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:Batch_Humidity,X2:Batch_RainFall,X3:Batch_RainFallDay,X4:Batch_AvgTemp,X5:Batch_MaxTemp,X6:Batch_MinTemp,Y:Batch_Level,keep_prob:0.5})
 
-				After_Inception_3C_Data = tf.convert_to_tensor(After_Inception_3C_Data)
-
-				_, cost_val = sess.run([optimizer,cost],feed_dict={X1:Batch_Humidity,X2:Batch_RainFall,X3:Batch_RaiinFallDay,X4:Batch_AvgTemp,X5:Batch_MaxTemp,X6:Batch_MinTemp,
-					Y:Batch_Level})
-
-				total_cost += cost_val
+			total_cost += cost_val
 
 			print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
 
 print("완료")
+	
+# 	with tf.Session() as sess:
+# 		sess.run(tf.global_variables_initializer())
 
-		# for epoch in range(1):
+# 		for epoch in range(1):
+
+# 			total_cost = 0 
+
+# 			for i in range(total_batch):
+
+# 				humidity_stem = (sess.run(Stem_Data_humidity, feed_dict={X1_img: Batch_Humidity[i].reshape(-1,30,30,1)}))
+# 				RainFall_stem= (sess.run(Stem_Data_RainFall, feed_dict={X2_img: Batch_RainFall[i].reshape(-1,30,30,1)}))
+# 				RainFallDay_stem = (sess.run(Stem_Data_RainFallDay, feed_dict={X3_img: Batch_RainFallDay[i].reshape(-1,30,30,1)}))
+# 				AvgTemp_stem = (sess.run(Stem_Data_AvgTemp, feed_dict={X4_img: Batch_AvgTemp[i].reshape(-1,30,30,1)}))
+# 				MaxTemp_stem = (sess.run(Stem_Data_MaxTemp, feed_dict={X5_img: Batch_MaxTemp[i].reshape(-1,30,30,1)}))
+# 				MinTemp_stem = (sess.run(Stem_Data_MinTemp, feed_dict={X6_img: Batch_MinTemp[i].reshape(-1,30,30,1)}))
+
+# 				# humidity_stem = humidity_stem.reshape(-1,30,30,1)
+# 				# RainFall_stem = RainFall_stem.reshape(-1,30,30,1)
+
+# 				All_Stem_Concat_axis2= tf.concat([humidity_stem,RainFall_stem,RainFallDay_stem,AvgTemp_stem,MaxTemp_stem,MinTemp_stem],axis=2)
+# 				After_Stem_Input = tf.concat([All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,
+# 												All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
+# 				# print(After_Stem_Input.shape)
+# 				np_After_Stem_Input = After_Stem_Input.eval()
+# 				After_Inception_4a_Data = (sess.run(Inception_4a_Data,feed_dict={I4A:np_After_Stem_Input}))
+# 				After_Reduction_A_Data = (sess.run(Reduction_A_Data,feed_dict={RA:After_Inception_4a_Data}))
+# 				After_Inception_7B_Data =(sess.run(Inception_7B_Data,feed_dict={I7B:After_Reduction_A_Data}))
+# 				After_Reduction_B_Data = (sess.run(Reduction_B_Data,feed_dict={RB:After_Inception_7B_Data}))
+# 				After_Inception_3C_Data = (sess.run(Inception_3C_Data,feed_dict={I3C:After_Reduction_B_Data}))
+
+# 				After_Inception_3C_Data = tf.convert_to_tensor(After_Inception_3C_Data)
+
+# 				_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:humidity_stem,X2:RainFall_stem,X3:RainFallDay_stem,X4:AvgTemp_stem,X5:MaxTemp_stem,X6:MinTemp_stem,Y:Batch_Level,keep_prob:0.5})
+
+# 				total_cost += cost_val
+
+# 			print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
+
+# print("완료")
 
 		
 
