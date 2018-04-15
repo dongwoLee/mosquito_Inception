@@ -284,11 +284,11 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
-	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
+	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
+	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -306,7 +306,6 @@ if __name__ == '__main__':
 	Batch_MinTemp = MakeBatch(MinTemp_Data,1000,batch_size)
 
 	Batch_Level = MakeBatch(LevelSet,1000,batch_size)
-	print(Batch_Level[0].shape)
 	# X_img = tf.reshape(X,[-1,30,30,1])
 	X1 = tf.placeholder(tf.float32, shape=[None,900])
 	X1_img = tf.reshape(X1,[-1,30,30,1])
@@ -350,13 +349,46 @@ if __name__ == '__main__':
 	W_first_softmax_temp = tf.layers.max_pooling2d(inputs=Reduction_B_Data,pool_size=[6,6],strides=[1,1])
 	L_first_softmax_temp = tf.layers.dropout(inputs=W_first_softmax_temp,rate=0.7,training=True)
 
+	L_first_softmax_temp = tf.reshape(L_first_softmax_temp,[-1,1*1*192])
+
+	W1 = tf.get_variable("W1",shape=[192,96],initializer=tf.contrib.layers.xavier_initializer())
+	b1 = tf.Variable(tf.random_normal([96]))
+	L1 = tf.nn.relu(tf.matmul(L_first_softmax_temp,W1)+b1)
+	L1 = tf.nn.dropout(L1, keep_prob=0.7)
+
+	W2 = tf.get_variable("W2",shape=[96,48],initializer=tf.contrib.layers.xavier_initializer())
+	b2 = tf.Variable(tf.random_normal([48]))
+	L2 = tf.nn.relu(tf.matmul(L1,W2)+b2)
+	L2 = tf.nn.dropout(L2, keep_prob=0.7)
+
+	W3 = tf.get_variable("W3", shape=[48, 9],initializer=tf.contrib.layers.xavier_initializer())
+	b3 = tf.Variable(tf.random_normal([9]))
+	model_first = tf.matmul(L2, W3) + b3
+
+	first_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = model_first,labels=Y))
+
 	W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=Inception_3C_Data,pool_size=[6,6],strides=[1,1])
 	L1_After_Inception_3C_Data_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP,rate=0.7,training=True)
 
 	Dropout_Inception_3C_Data_AveP = tf.layers.dropout(inputs=L1_After_Inception_3C_Data_AveP,rate=0.8,training=True)
 
-	first_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = L_first_softmax_temp,labels=Y))
-	second_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=Dropout_Inception_3C_Data_AveP,labels=Y))
+	Dropout_Inception_3C_Data_AveP = tf.reshape(Dropout_Inception_3C_Data_AveP,[-1,1*1*192])
+
+	W4 = tf.get_variable("W4",shape=[192,96],initializer=tf.contrib.layers.xavier_initializer())
+	b4 = tf.Variable(tf.random_normal([96]))
+	L4 = tf.nn.relu(tf.matmul(Dropout_Inception_3C_Data_AveP,W4)+b4)
+	L4 = tf.nn.dropout(L4, keep_prob=0.7)
+
+	W5 = tf.get_variable("W5",shape=[96,48],initializer=tf.contrib.layers.xavier_initializer())
+	b5 = tf.Variable(tf.random_normal([48]))
+	L5 = tf.nn.relu(tf.matmul(L4,W5)+b5)
+	L5 = tf.nn.dropout(L5, keep_prob=0.7)
+
+	W6 = tf.get_variable("W6", shape=[48, 9],initializer=tf.contrib.layers.xavier_initializer())
+	b6 = tf.Variable(tf.random_normal([9]))
+	model_second = tf.matmul(L5, W6) + b6
+
+	second_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model_second,labels=Y))
 
 	cost_result = 0.7*second_cost+0.3*first_cost
 	optimizer = tf.train.AdamOptimizer(0.0001).minimize(cost_result)
