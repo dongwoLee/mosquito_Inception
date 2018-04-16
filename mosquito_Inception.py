@@ -284,19 +284,19 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
 	Humidity_Data, RainFall_Data,RainFallDay_Data,AvgTemp_Data,MaxTemp_Data,MinTemp_Data = InputSet(Couple,Equality_128_Input)
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
 
-	batch_size = 20
-	total_batch = 50
+	batch_size = 10
+	total_batch = 100
 
 	Batch_Humidity = MakeBatch(Humidity_Data,1000,batch_size)
 	Batch_RainFall = MakeBatch(RainFall_Data,1000,batch_size)
@@ -304,9 +304,9 @@ if __name__ == '__main__':
 	Batch_AvgTemp = MakeBatch(AvgTemp_Data,1000,batch_size)
 	Batch_MaxTemp = MakeBatch(MaxTemp_Data,1000,batch_size)
 	Batch_MinTemp = MakeBatch(MinTemp_Data,1000,batch_size)
-	print(Batch_Humidity.shape)
+
 	Batch_Level = MakeBatch(LevelSet,1000,batch_size)
-	print(Batch_Level.shape)
+	
 	# X_img = tf.reshape(X,[-1,30,30,1])
 	X1 = tf.placeholder(tf.float32, shape=[None,30,30,1])
 	# X1_img = tf.reshape(X1,[-1,30,30,1])
@@ -400,6 +400,7 @@ if __name__ == '__main__':
 			
 			Batch_Humidity = Batch_Humidity[i]
 			Batch_Humidity = Batch_Humidity[i].reshape(-1,30,30,1)
+			print(Batch_Humidity.shape)
 			Batch_RainFall = Batch_RainFall[i]
 			Batch_RainFall = Batch_RainFall[i].reshape(-1,30,30,1)
 			Batch_RainFallDay = Batch_RainFallDay[i]
@@ -410,9 +411,11 @@ if __name__ == '__main__':
 			Batch_MaxTemp = Batch_MaxTemp[i].reshape(-1,30,30,1)
 			Batch_MinTemp = Batch_MinTemp[i]
 			Batch_MinTemp = Batch_MinTemp[i].reshape(-1,30,30,1)
+			
 			Batch_Level = Batch_Level[i]
 			
-			_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:Batch_Humidity,X2:Batch_RainFall,X3:Batch_RainFallDay,X4:Batch_AvgTemp,X5:Batch_MaxTemp,X6:Batch_MinTemp,Y:Batch_Level,keep_prob:0.5})
+			_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:Batch_Humidity,X2:Batch_RainFall,X3:Batch_RainFallDay,X4:Batch_AvgTemp,X5:Batch_MaxTemp,X6:Batch_MinTemp,
+																		Y:Batch_Level,keep_prob:0.5})
 
 			total_cost += cost_val
 
