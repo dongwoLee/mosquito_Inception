@@ -304,37 +304,32 @@ if __name__ == '__main__':
 	Batch_AvgTemp = MakeBatch(AvgTemp_Data,1000,batch_size)
 	Batch_MaxTemp = MakeBatch(MaxTemp_Data,1000,batch_size)
 	Batch_MinTemp = MakeBatch(MinTemp_Data,1000,batch_size)
-
+	print(Batch_Humidity.shape)
 	Batch_Level = MakeBatch(LevelSet,1000,batch_size)
+	print(Batch_Level.shape)
 	# X_img = tf.reshape(X,[-1,30,30,1])
-	X1 = tf.placeholder(tf.float32, shape=[None,900])
-	X1_img = tf.reshape(X1,[-1,30,30,1])
-	X2 = tf.placeholder(tf.float32, shape=[None,900])
-	X2_img = tf.reshape(X2,[-1,30,30,1])
-	X3 = tf.placeholder(tf.float32, shape=[None,900])
-	X3_img = tf.reshape(X3,[-1,30,30,1])
-	X4 = tf.placeholder(tf.float32, shape=[None,900])
-	X4_img = tf.reshape(X4,[-1,30,30,1])
-	X5 = tf.placeholder(tf.float32, shape=[None,900])
-	X5_img = tf.reshape(X5,[-1,30,30,1])
-	X6 = tf.placeholder(tf.float32, shape=[None,900])
-	X6_img = tf.reshape(X6,[-1,30,30,1])
+	X1 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	# X1_img = tf.reshape(X1,[-1,30,30,1])
+	X2 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	# X2_img = tf.reshape(X2,[-1,30,30,1])
+	X3 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	# X3_img = tf.reshape(X3,[-1,30,30,1])
+	X4 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	# X4_img = tf.reshape(X4,[-1,30,30,1])
+	X5 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	# X5_img = tf.reshape(X5,[-1,30,30,1])
+	X6 = tf.placeholder(tf.float32, shape=[None,30,30,1])
+	# X6_img = tf.reshape(X6,[-1,30,30,1])
 	Y = tf.placeholder(tf.float32,shape=[None,9])
 
 	keep_prob = tf.placeholder(tf.float32)
 
-	# I4A= tf.placeholder(tf.float32,shape=[None,30,30,20])
-	# RA = tf.placeholder(tf.float32,shape=[None,30,30,48])
-	# I7B = tf.placeholder(tf.float32,shape=[None,14,14,128])
-	# RB = tf.placeholder(tf.float32,shape=[None,14,14,128])
-	# I3C = tf.placeholder(tf.float32,shape=[None,6,6,192])
-
-	Stem_Data_humidity = MakeStemLayer(X1_img) #stem data 6개
-	Stem_Data_RainFall = MakeStemLayer(X2_img)
-	Stem_Data_RainFallDay = MakeStemLayer(X3_img)
-	Stem_Data_AvgTemp = MakeStemLayer(X4_img)
-	Stem_Data_MaxTemp = MakeStemLayer(X5_img)
-	Stem_Data_MinTemp = MakeStemLayer(X6_img)
+	Stem_Data_humidity = MakeStemLayer(X1) #stem data 6개
+	Stem_Data_RainFall = MakeStemLayer(X2)
+	Stem_Data_RainFallDay = MakeStemLayer(X3)
+	Stem_Data_AvgTemp = MakeStemLayer(X4)
+	Stem_Data_MaxTemp = MakeStemLayer(X5)
+	Stem_Data_MinTemp = MakeStemLayer(X6)
 
 	All_Stem_Concat_axis2 = tf.concat([Stem_Data_humidity,Stem_Data_RainFall,Stem_Data_RainFallDay,Stem_Data_AvgTemp,Stem_Data_MaxTemp,Stem_Data_MinTemp],axis=2)
 	After_Stem_Input = tf.concat([All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2,All_Stem_Concat_axis2],axis=1)
@@ -397,27 +392,33 @@ if __name__ == '__main__':
 	sess = tf.Session()
 	sess.run(init)
 
-	for epoch in range(1):
+	for epoch in range(10):
 
 		total_cost = 0
 
 		for i in range(total_batch):
 			
 			Batch_Humidity = Batch_Humidity[i]
+			Batch_Humidity = Batch_Humidity[i].reshape(-1,30,30,1)
 			Batch_RainFall = Batch_RainFall[i]
+			Batch_RainFall = Batch_RainFall[i].reshape(-1,30,30,1)
 			Batch_RainFallDay = Batch_RainFallDay[i]
+			Batch_RainFallDay = Batch_RainFallDay[i].reshape(-1,30,30,1)
 			Batch_AvgTemp = Batch_AvgTemp[i]
+			Batch_AvgTemp = Batch_AvgTemp[i].reshape(-1,30,30,1)
 			Batch_MaxTemp = Batch_MaxTemp[i]
+			Batch_MaxTemp = Batch_MaxTemp[i].reshape(-1,30,30,1)
 			Batch_MinTemp = Batch_MinTemp[i]
+			Batch_MinTemp = Batch_MinTemp[i].reshape(-1,30,30,1)
 			Batch_Level = Batch_Level[i]
 			
 			_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:Batch_Humidity,X2:Batch_RainFall,X3:Batch_RainFallDay,X4:Batch_AvgTemp,X5:Batch_MaxTemp,X6:Batch_MinTemp,Y:Batch_Level,keep_prob:0.5})
 
 			total_cost += cost_val
 
-			print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
+		print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
 
-print("완료")
+	print("완료")
 	
 # 	with tf.Session() as sess:
 # 		sess.run(tf.global_variables_initializer())
