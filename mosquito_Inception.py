@@ -299,7 +299,6 @@ if __name__ == '__main__':
 	total_batch = 100
 
 	Batch_Humidity = MakeBatch(Humidity_Data,1000,batch_size)
-	print(Batch_Humidity[0].shape)
 	Batch_RainFall = MakeBatch(RainFall_Data,1000,batch_size)
 	Batch_RainFallDay = MakeBatch(RainFallDay_Data,1000,batch_size)
 	Batch_AvgTemp = MakeBatch(AvgTemp_Data,1000,batch_size)
@@ -308,19 +307,12 @@ if __name__ == '__main__':
 
 	Batch_Level = MakeBatch(LevelSet,1000,batch_size)
 	
-	# X_img = tf.reshape(X,[-1,30,30,1])
 	X1 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	# X1_img = tf.reshape(X1,[-1,30,30,1])
 	X2 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	# X2_img = tf.reshape(X2,[-1,30,30,1])
 	X3 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	# X3_img = tf.reshape(X3,[-1,30,30,1])
 	X4 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	# X4_img = tf.reshape(X4,[-1,30,30,1])
 	X5 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	# X5_img = tf.reshape(X5,[-1,30,30,1])
 	X6 = tf.placeholder(tf.float32, shape=[None,30,30,1])
-	# X6_img = tf.reshape(X6,[-1,30,30,1])
 	Y = tf.placeholder(tf.float32,shape=[None,9])
 
 	keep_prob = tf.placeholder(tf.float32)
@@ -393,35 +385,43 @@ if __name__ == '__main__':
 	sess = tf.Session()
 	sess.run(init)
 
-	for epoch in range(10):
+	for epoch in range(15):
 
 		total_cost = 0
 
 		for i in range(total_batch):
-			
-			Batch_Humidity = Batch_Humidity[i]
-			Batch_Humidity = Batch_Humidity.reshape(-1,30,30,1)
-			Batch_RainFall = Batch_RainFall[i]
-			Batch_RainFall = Batch_RainFall.reshape(-1,30,30,1)
-			Batch_RainFallDay = Batch_RainFallDay[i]
-			Batch_RainFallDay = Batch_RainFallDay.reshape(-1,30,30,1)
-			Batch_AvgTemp = Batch_AvgTemp[i]
-			Batch_AvgTemp = Batch_AvgTemp.reshape(-1,30,30,1)
-			Batch_MaxTemp = Batch_MaxTemp[i]
-			Batch_MaxTemp = Batch_MaxTemp.reshape(-1,30,30,1)
-			Batch_MinTemp = Batch_MinTemp[i]
-			Batch_MinTemp = Batch_MinTemp.reshape(-1,30,30,1)
-			
-			Batch_Level = Batch_Level[i] 
 
-			_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:Batch_Humidity,X2:Batch_RainFall,X3:Batch_RainFallDay,X4:Batch_AvgTemp,X5:Batch_MaxTemp,X6:Batch_MinTemp,
-																		Y:Batch_Level,keep_prob:0.5})
+			Batch_Humidity_a = []
+			Batch_RainFall_a = []
+			Batch_RainFallDay_a = []
+			Batch_AvgTemp_a = []
+			Batch_MaxTemp_a = []
+			Batch_MinTemp_a = []
+			Batch_Level_a = []
+
+			Batch_Humidity_a = Batch_Humidity[i]
+			Batch_Humidity_a = Batch_Humidity_a.reshape(-1,30,30,1)
+			Batch_RainFall_a = Batch_RainFall[i]
+			Batch_RainFall_a = Batch_RainFall_a.reshape(-1,30,30,1)
+			Batch_RainFallDay_a = Batch_RainFallDay[i]
+			Batch_RainFallDay_a = Batch_RainFallDay_a.reshape(-1,30,30,1)
+			Batch_AvgTemp_a = Batch_AvgTemp[i]
+			Batch_AvgTemp_a = Batch_AvgTemp_a.reshape(-1,30,30,1)
+			Batch_MaxTemp_a = Batch_MaxTemp[i]
+			Batch_MaxTemp_a = Batch_MaxTemp_a.reshape(-1,30,30,1)
+			Batch_MinTemp_a = Batch_MinTemp[i]
+			Batch_MinTemp_a = Batch_MinTemp_a.reshape(-1,30,30,1)
+				
+			Batch_Level_a = Batch_Level[i] 
+			
+			_, cost_val = sess.run([optimizer,cost_result],feed_dict={X1:Batch_Humidity_a,X2:Batch_RainFall_a,X3:Batch_RainFallDay_a,X4:Batch_AvgTemp_a,X5:Batch_MaxTemp_a,X6:Batch_MinTemp_a,
+																		Y:Batch_Level_a,keep_prob:0.5})
 
 			total_cost += cost_val
 
 		print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
 
-	print("완료")
+	print("finish")
 	
 		
 
