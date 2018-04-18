@@ -284,11 +284,11 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn_2/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn_2/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
-	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
+	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn_2/TestData/TestInput/"
+	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn_2/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
 	
@@ -391,14 +391,6 @@ if __name__ == '__main__':
 
 		for i in range(total_batch):
 
-			Batch_Humidity_a = []
-			Batch_RainFall_a = []
-			Batch_RainFallDay_a = []
-			Batch_AvgTemp_a = []
-			Batch_MaxTemp_a = []
-			Batch_MinTemp_a = []
-			Batch_Level_a = []
-
 			Batch_Humidity_a = Batch_Humidity[i]
 			Batch_Humidity_a = Batch_Humidity_a.reshape(-1,30,30,1)
 			Batch_RainFall_a = Batch_RainFall[i]
@@ -422,6 +414,12 @@ if __name__ == '__main__':
 		print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
 
 	print("finish")
+
+	is_correct = tf.equal(tf.argmax(model, 1), tf.argmax(Y, 1))
+	print (is_correct)
+	accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+	print('정확도:', sess.run(accuracy,feed_dict={X: .reshape(-1, 28, 28, 1), Y: mnist.test.labels,keep_prob: 1}))
+	
 	
 		
 
