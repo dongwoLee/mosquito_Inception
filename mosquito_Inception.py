@@ -284,16 +284,23 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-	Equality_128_Input = "/Users/dongwoo/Desktop/mosquito_cnn_2/WholeDataSet_Cluster/equality_128_Input/"
-	Equality_128_Level = "/Users/dongwoo/Desktop/mosquito_cnn_2/WholeDataSet_Cluster/equality_128_Level/"
+	Equality_128_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Input/"
+	Equality_128_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/equality_128_Level/"
 
-	TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn_2/TestData/TestInput/"
-	TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn_2/TestData/TestLevel/"
+	TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestInput/"
+	TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/TestData/TestLevel/"
 
 	Couple = MakeCouple(Equality_128_Input,Equality_128_Level)
+
+	Test_Couple = MakeCouple(TestInput_Data,TestLevel_Data)
 	
 	Humidity_Data, RainFall_Data,RainFallDay_Data,AvgTemp_Data,MaxTemp_Data,MinTemp_Data = InputSet(Couple,Equality_128_Input)
+
 	LevelSet = MakeLabelSet(Couple,Equality_128_Level)
+
+	Humidity_Data_Test, RainFall_Data_Test, RainFallDay_Data_Test, AvgTemp_Data_Test, MaxTemp_Data_Test, MinTemp_Data_Test = InputSet(Test_Couple,TestInput_Data)
+
+	LevelSet_Test = MakeLabelSet(Test_Couple,TestLevel_Data)
 
 	batch_size = 10
 	total_batch = 100
@@ -415,11 +422,16 @@ if __name__ == '__main__':
 
 	print("finish")
 
+
+
 	is_correct = tf.equal(tf.argmax(model, 1), tf.argmax(Y, 1))
 	print (is_correct)
 	accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
-	print('정확도:', sess.run(accuracy,feed_dict={X: .reshape(-1, 28, 28, 1), Y: mnist.test.labels,keep_prob: 1}))
+	print('정확도:', sess.run(accuracy,feed_dict={X: .reshape(-1, 30, 30, 1), Y: mnist.test.labels,keep_prob: 1}))
+
+
 	
+
 	
 		
 
