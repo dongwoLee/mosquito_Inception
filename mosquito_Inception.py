@@ -313,6 +313,15 @@ if __name__ == '__main__':
 	Batch_MinTemp = MakeBatch(MinTemp_Data,1000,batch_size)
 
 	Batch_Level = MakeBatch(LevelSet,1000,batch_size)
+
+	Batch_Humidity_Test = MakeBatch(Humidity_Data_Test,400,batch_size)
+	Batch_RainFall_Test = MakeBatch(RainFall_Data_Test,400,batch_size)
+	Batch_RainFallDay_Test = MakeBatch(RainFallDay_Data_Test,400,batch_size)
+	Batch_AvgTemp_Test = MakeBatch(AvgTemp_Data_Test,400,batch_size)
+	Batch_MaxTemp_Test = MakeBatch(MaxTemp_Data_Test,400,batch_size)
+	Batch_MinTemp_Test = MakeBatch(MinTemp_Data_Test,400,batch_size)
+
+	Batch_Level_Test = MakeBatch(LevelSet_Test,400,batch_size)
 	
 	X1 = tf.placeholder(tf.float32, shape=[None,30,30,1])
 	X2 = tf.placeholder(tf.float32, shape=[None,30,30,1])
@@ -422,12 +431,10 @@ if __name__ == '__main__':
 
 	print("finish")
 
-
-
 	is_correct = tf.equal(tf.argmax(model, 1), tf.argmax(Y, 1))
 	print (is_correct)
 	accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
-	print('정확도:', sess.run(accuracy,feed_dict={X: .reshape(-1, 30, 30, 1), Y: mnist.test.labels,keep_prob: 1}))
+	print('accuracy:', sess.run(accuracy,feed_dict={X: .reshape(-1, 30, 30, 1), Y: mnist.test.labels,keep_prob: 1}))
 
 
 	
