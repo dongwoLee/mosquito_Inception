@@ -335,6 +335,7 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
+<<<<<<< HEAD
     Train_Input_58 = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_58/"
     Train_Level_58 = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_58/"
 
@@ -343,6 +344,16 @@ if __name__ == '__main__':
 
     TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Test/"
     TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Test/"
+=======
+    Train_Input_58 = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_58/"
+    Train_Level_58 = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_58/"
+
+    Train_Input = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Train/"
+    Train_Level = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Train/"
+
+    TestInput_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Test/"
+    TestLevel_Data = "/Users/leedongwoo/Desktop/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Test/"
+>>>>>>> b42c5f059545fbb448d276dfad9011eb0fee6182
 
     Couple_58 = MakeCouple(Train_Input_58,Train_Level_58)
     Couple_58 = MakeRandom(Couple_58)
@@ -471,7 +482,11 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
+<<<<<<< HEAD
     for epoch in range(1):
+=======
+    for epoch in range(250):
+>>>>>>> b42c5f059545fbb448d276dfad9011eb0fee6182
 
         total_cost = 0
 
@@ -496,6 +511,7 @@ if __name__ == '__main__':
                                                    X4: Batch_AvgTemp_a_58, X5: Batch_MaxTemp_a_58, X6: Batch_MinTemp_a_58,
                                                    Y: Batch_Level_a_58, keep_prob: 0.5})
             # print(tmp)
+<<<<<<< HEAD
 
             total_cost += cost_val
 
@@ -510,6 +526,14 @@ if __name__ == '__main__':
         new_saver = tf.train.import_meta_graph('./inception.ckpt.meta')
         new_saver.restore(sess,tf.train.latest_checkpoint('./'))
 
+=======
+
+            total_cost += cost_val
+
+        print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch_58))
+
+    print("finish")
+>>>>>>> b42c5f059545fbb448d276dfad9011eb0fee6182
 
     # is_correct = tf.equal(tf.argmax(model_second, 1), (tf.argmax(Y, 1)))
     # print(is_correct)
