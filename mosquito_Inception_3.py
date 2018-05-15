@@ -1,4 +1,4 @@
-#5-8단계 먼저 학습 
+ #5-8단계 먼저 학습
 import tensorflow as tf
 import csv
 import numpy as np
@@ -335,14 +335,14 @@ def Inception_3C(X):
 
 if __name__ == '__main__':
 
-    Train_Input_58 = "/Users/dongwoo/Desktop/mosquito_cnn_real/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_58/"
-    Train_Level_58 = "/Users/dongwoo/Desktop/mosquito_cnn_real/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_58/"
+    Train_Input_58 = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_58/"
+    Train_Level_58 = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_58/"
 
-    Train_Input = "/Users/dongwoo/Desktop/mosquito_cnn_real/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Train/"
-    Train_Level = "/Users/dongwoo/Desktop/mosquito_cnn_real/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Train/"
+    Train_Input = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Train/"
+    Train_Level = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Train/"
 
-    TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn_real/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Test/"
-    TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn_real/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Test/"
+    TestInput_Data = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeInput_Cluster_Test/"
+    TestLevel_Data = "/Users/dongwoo/Desktop/mosquito_cnn_restore/mosquito_cnn_real/WholeDataSet_Cluster/WholeLevel_Cluster_Test/"
 
     Couple_58 = MakeCouple(Train_Input_58,Train_Level_58)
     Couple_58 = MakeRandom(Couple_58)
@@ -350,6 +350,18 @@ if __name__ == '__main__':
     Humidity_Data_58, RainFall_Data_58, RainFallDay_Data_58, AvgTemp_Data_58, MaxTemp_Data_58, MinTemp_Data_58 = InputSet(Couple_58,Train_Input_58)
 
     LevelSet_58 = MakeLabelSet(Couple_58,Train_Level_58)
+
+    batch_size_58=10
+    total_batch_58=108
+
+    Batch_Humidity_58 = MakeBatch(Humidity_Data_58,1080,batch_size_58)
+    Batch_RainFall_58 = MakeBatch(RainFall_Data_58,1080,batch_size_58)
+    Batch_RainFallDay_58 = MakeBatch(RainFallDay_Data_58,1080,batch_size_58)
+    Batch_AvgTemp_58 = MakeBatch(AvgTemp_Data_58,1080,batch_size_58)
+    Batch_MaxTemp_58 = MakeBatch(MaxTemp_Data_58,1080,batch_size_58)
+    Batch_MinTemp_58 = MakeBatch(MinTemp_Data_58,1080,batch_size_58)
+
+    Batch_Level_58 = MakeBatch(LevelSet_58,1080,batch_size_58)
 
     # Couple = MakeCouple(Train_Input, Train_Level)
     # Couple = MakeRandom(Couple)
@@ -377,119 +389,127 @@ if __name__ == '__main__':
 
     # Batch_Level = MakeBatch(LevelSet, 6600, batch_size)
 
-    # X1 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
-    # X2 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
-    # X3 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
-    # X4 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
-    # X5 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
-    # X6 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
-    # Y = tf.placeholder(tf.float32, shape=[None, 9])
+    X1 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
+    X2 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
+    X3 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
+    X4 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
+    X5 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
+    X6 = tf.placeholder(tf.float32, shape=[None, 30, 30, 1])
+    Y = tf.placeholder(tf.float32, shape=[None, 9])
 
-    # keep_prob = tf.placeholder(tf.float32)
+    keep_prob = tf.placeholder(tf.float32)
 
-    # Stem_Data_humidity = MakeStemLayer(X1)  # stem data 6개
-    # Stem_Data_RainFall = MakeStemLayer(X2)
-    # Stem_Data_RainFallDay = MakeStemLayer(X3)
-    # Stem_Data_AvgTemp = MakeStemLayer(X4)
-    # Stem_Data_MaxTemp = MakeStemLayer(X5)
-    # Stem_Data_MinTemp = MakeStemLayer(X6)
+    Stem_Data_humidity_58 = MakeStemLayer(X1)  # stem data 6개
+    Stem_Data_RainFall_58 = MakeStemLayer(X2)
+    Stem_Data_RainFallDay_58 = MakeStemLayer(X3)
+    Stem_Data_AvgTemp_58 = MakeStemLayer(X4)
+    Stem_Data_MaxTemp_58 = MakeStemLayer(X5)
+    Stem_Data_MinTemp_58 = MakeStemLayer(X6)
 
-    # All_Stem_Concat_axis2 = tf.concat(
-    #     [Stem_Data_humidity, Stem_Data_RainFall, Stem_Data_RainFallDay, Stem_Data_AvgTemp, Stem_Data_MaxTemp,
-    #      Stem_Data_MinTemp], axis=2)
-    # After_Stem_Input = tf.concat(
-    #     [All_Stem_Concat_axis2, All_Stem_Concat_axis2, All_Stem_Concat_axis2, All_Stem_Concat_axis2,
-    #      All_Stem_Concat_axis2, All_Stem_Concat_axis2], axis=1)
+    All_Stem_Concat_axis2 = tf.concat(
+        [Stem_Data_humidity_58, Stem_Data_RainFall_58, Stem_Data_RainFallDay_58, Stem_Data_AvgTemp_58, Stem_Data_MaxTemp_58,
+         Stem_Data_MinTemp_58], axis=2)
+    After_Stem_Input = tf.concat(
+        [All_Stem_Concat_axis2, All_Stem_Concat_axis2, All_Stem_Concat_axis2, All_Stem_Concat_axis2,
+         All_Stem_Concat_axis2, All_Stem_Concat_axis2], axis=1)
 
-    # Inception_4a_Data = Inception_4A(After_Stem_Input)
-    # Reduction_A_Data = Reduction_A(Inception_4a_Data)
-    # Inception_7B_Data = Inception_7B(Reduction_A_Data)
-    # Reduction_B_Data = Reduction_B(Inception_7B_Data)
-    # Inception_3C_Data = Inception_3C(Reduction_B_Data)
-    # # 	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. (단 [?,1,1,filters]) <- 형태로
-    # W_first_softmax_temp = tf.layers.max_pooling2d(inputs=Reduction_B_Data, pool_size=[6, 6], strides=[1, 1])
-    # L_first_softmax_temp = tf.layers.dropout(inputs=W_first_softmax_temp, rate=0.7, training=True)
+    Inception_4a_Data = Inception_4A(After_Stem_Input)
+    Reduction_A_Data = Reduction_A(Inception_4a_Data)
+    Inception_7B_Data = Inception_7B(Reduction_A_Data)
+    Reduction_B_Data = Reduction_B(Inception_7B_Data)
+    Inception_3C_Data = Inception_3C(Reduction_B_Data)
+    # 	#인셉션에서는 Reduction B 자체가 모델이므로. softmax적용해서cost값 정해줘야함. (단 [?,1,1,filters]) <- 형태로
+    W_first_softmax_temp = tf.layers.max_pooling2d(inputs=Reduction_B_Data, pool_size=[6, 6], strides=[1, 1])
+    L_first_softmax_temp = tf.layers.dropout(inputs=W_first_softmax_temp, rate=0.7, training=True)
 
-    # L_first_softmax_temp = tf.reshape(L_first_softmax_temp, [-1, 1 * 1 * 768])
+    L_first_softmax_temp = tf.reshape(L_first_softmax_temp, [-1, 1 * 1 * 768])
 
-    # W1 = tf.get_variable("W1", shape=[768, 192], initializer=tf.contrib.layers.xavier_initializer())
-    # b1 = tf.Variable(tf.random_normal([192]))
-    # L1 = tf.nn.relu(tf.matmul(L_first_softmax_temp, W1) + b1)
-    # L1 = tf.nn.dropout(L1, keep_prob=0.7)
+    W1 = tf.get_variable("W1", shape=[768, 192], initializer=tf.contrib.layers.xavier_initializer())
+    b1 = tf.Variable(tf.random_normal([192]))
+    L1 = tf.nn.relu(tf.matmul(L_first_softmax_temp, W1) + b1)
+    L1 = tf.nn.dropout(L1, keep_prob=0.7)
 
-    # W2 = tf.get_variable("W2", shape=[192, 48], initializer=tf.contrib.layers.xavier_initializer())
-    # b2 = tf.Variable(tf.random_normal([48]))
-    # L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
-    # L2 = tf.nn.dropout(L2, keep_prob=0.7)
+    W2 = tf.get_variable("W2", shape=[192, 48], initializer=tf.contrib.layers.xavier_initializer())
+    b2 = tf.Variable(tf.random_normal([48]))
+    L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
+    L2 = tf.nn.dropout(L2, keep_prob=0.7)
 
-    # W3 = tf.get_variable("W3", shape=[48, 9], initializer=tf.contrib.layers.xavier_initializer())
-    # b3 = tf.Variable(tf.random_normal([9]))
-    # model_first = tf.matmul(L2, W3) + b3
+    W3 = tf.get_variable("W3", shape=[48, 9], initializer=tf.contrib.layers.xavier_initializer())
+    b3 = tf.Variable(tf.random_normal([9]))
+    model_first = tf.matmul(L2, W3) + b3
 
-    # first_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model_first, labels=Y))
+    first_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model_first, labels=Y))
 
-    # W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=Inception_3C_Data, pool_size=[6, 6],
-    #                                                               strides=[1, 1])
-    # L1_After_Inception_3C_Data_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP, rate=0.7, training=True)
+    W1_After_Inception_3C_Data_AveP = tf.layers.average_pooling2d(inputs=Inception_3C_Data, pool_size=[6, 6],
+                                                                  strides=[1, 1])
+    L1_After_Inception_3C_Data_AveP = tf.layers.dropout(inputs=W1_After_Inception_3C_Data_AveP, rate=0.7, training=True)
 
-    # Dropout_Inception_3C_Data_AveP = tf.layers.dropout(inputs=L1_After_Inception_3C_Data_AveP, rate=0.8, training=True)
+    Dropout_Inception_3C_Data_AveP = tf.layers.dropout(inputs=L1_After_Inception_3C_Data_AveP, rate=0.8, training=True)
 
-    # Dropout_Inception_3C_Data_AveP = tf.reshape(Dropout_Inception_3C_Data_AveP, [-1, 1 * 1 * 768])
+    Dropout_Inception_3C_Data_AveP = tf.reshape(Dropout_Inception_3C_Data_AveP, [-1, 1 * 1 * 768])
 
-    # W4 = tf.get_variable("W4", shape=[768, 192], initializer=tf.contrib.layers.xavier_initializer())
-    # b4 = tf.Variable(tf.random_normal([192]))
-    # L4 = tf.nn.relu(tf.matmul(Dropout_Inception_3C_Data_AveP, W4) + b4)
-    # L4 = tf.nn.dropout(L4, keep_prob=0.7)
+    W4 = tf.get_variable("W4", shape=[768, 192], initializer=tf.contrib.layers.xavier_initializer())
+    b4 = tf.Variable(tf.random_normal([192]))
+    L4 = tf.nn.relu(tf.matmul(Dropout_Inception_3C_Data_AveP, W4) + b4)
+    L4 = tf.nn.dropout(L4, keep_prob=0.7)
 
-    # W5 = tf.get_variable("W5", shape=[192, 48], initializer=tf.contrib.layers.xavier_initializer())
-    # b5 = tf.Variable(tf.random_normal([48]))
-    # L5 = tf.nn.relu(tf.matmul(L4, W5) + b5)
-    # L5 = tf.nn.dropout(L5, keep_prob=0.7)
+    W5 = tf.get_variable("W5", shape=[192, 48], initializer=tf.contrib.layers.xavier_initializer())
+    b5 = tf.Variable(tf.random_normal([48]))
+    L5 = tf.nn.relu(tf.matmul(L4, W5) + b5)
+    L5 = tf.nn.dropout(L5, keep_prob=0.7)
 
-    # W6 = tf.get_variable("W8", shape=[48, 9], initializer=tf.contrib.layers.xavier_initializer())
-    # b6 = tf.Variable(tf.random_normal([9]))
-    # model_second = tf.matmul(L5, W6) + b6
+    W6 = tf.get_variable("W8", shape=[48, 9], initializer=tf.contrib.layers.xavier_initializer())
+    b6 = tf.Variable(tf.random_normal([9]))
+    model_second = tf.matmul(L5, W6) + b6
 
-    # second_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model_second, labels=Y))
+    second_cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model_second, labels=Y))
 
-    # cost_result = 0.7 * second_cost + 0.3 * first_cost
-    # optimizer = tf.train.AdamOptimizer(0.000001).minimize(cost_result)
+    cost_result = 0.7 * second_cost + 0.3 * first_cost
+    optimizer = tf.train.AdamOptimizer(0.000001).minimize(cost_result)
 
-    # init = tf.global_variables_initializer()
-    # sess = tf.Session()
-    # sess.run(init)
+    init = tf.global_variables_initializer()
+    sess = tf.Session()
+    sess.run(init)
 
-    # for epoch in range(250):
+    for epoch in range(1):
 
-    #     total_cost = 0
+        total_cost = 0
 
-    #     for i in range(total_batch):
-    #         Batch_Humidity_a = Batch_Humidity[i]
-    #         Batch_Humidity_a = Batch_Humidity_a.reshape(-1, 30, 30, 1)
-    #         Batch_RainFall_a = Batch_RainFall[i]
-    #         Batch_RainFall_a = Batch_RainFall_a.reshape(-1, 30, 30, 1)
-    #         Batch_RainFallDay_a = Batch_RainFallDay[i]
-    #         Batch_RainFallDay_a = Batch_RainFallDay_a.reshape(-1, 30, 30, 1)
-    #         Batch_AvgTemp_a = Batch_AvgTemp[i]
-    #         Batch_AvgTemp_a = Batch_AvgTemp_a.reshape(-1, 30, 30, 1)
-    #         Batch_MaxTemp_a = Batch_MaxTemp[i]
-    #         Batch_MaxTemp_a = Batch_MaxTemp_a.reshape(-1, 30, 30, 1)
-    #         Batch_MinTemp_a = Batch_MinTemp[i]
-    #         Batch_MinTemp_a = Batch_MinTemp_a.reshape(-1, 30, 30, 1)
+        for i in range(total_batch_58):
+            Batch_Humidity_a_58 = Batch_Humidity_58[i]
+            Batch_Humidity_a_58 = Batch_Humidity_a_58.reshape(-1, 30, 30, 1)
+            Batch_RainFall_a_58 = Batch_RainFall_58[i]
+            Batch_RainFall_a_58 = Batch_RainFall_a_58.reshape(-1, 30, 30, 1)
+            Batch_RainFallDay_a_58 = Batch_RainFallDay_58[i]
+            Batch_RainFallDay_a_58 = Batch_RainFallDay_a_58.reshape(-1, 30, 30, 1)
+            Batch_AvgTemp_a_58 = Batch_AvgTemp_58[i]
+            Batch_AvgTemp_a_58 = Batch_AvgTemp_a_58.reshape(-1, 30, 30, 1)
+            Batch_MaxTemp_a_58 = Batch_MaxTemp_58[i]
+            Batch_MaxTemp_a_58 = Batch_MaxTemp_a_58.reshape(-1, 30, 30, 1)
+            Batch_MinTemp_a_58 = Batch_MinTemp_58[i]
+            Batch_MinTemp_a_58 = Batch_MinTemp_a_58.reshape(-1, 30, 30, 1)
 
-    #         Batch_Level_a = Batch_Level[i]
+            Batch_Level_a_58 = Batch_Level_58[i]
 
-    #         _, cost_val, tmp = sess.run([optimizer, cost_result, model_second],
-    #                                     feed_dict={X1: Batch_Humidity_a, X2: Batch_RainFall_a, X3: Batch_RainFallDay_a,
-    #                                                X4: Batch_AvgTemp_a, X5: Batch_MaxTemp_a, X6: Batch_MinTemp_a,
-    #                                                Y: Batch_Level_a, keep_prob: 0.5})
-    #         # print(tmp)
+            _, cost_val, tmp = sess.run([optimizer, cost_result, model_second],
+                                        feed_dict={X1: Batch_Humidity_a_58, X2: Batch_RainFall_a_58, X3: Batch_RainFallDay_a_58,
+                                                   X4: Batch_AvgTemp_a_58, X5: Batch_MaxTemp_a_58, X6: Batch_MinTemp_a_58,
+                                                   Y: Batch_Level_a_58, keep_prob: 0.5})
+            # print(tmp)
 
-    #         total_cost += cost_val
+            total_cost += cost_val
 
-    #     print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch))
+        print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.9f}'.format(total_cost / total_batch_58))
 
-    # print("finish")
+    print("finish")
+
+    saver = tf.train.Saver()
+    save_path = saver.save(sess,"./inception.ckpt")
+
+    with tf.Session() as sess:
+        new_saver = tf.train.import_meta_graph('./inception.ckpt.meta')
+        new_saver.restore(sess,tf.train.latest_checkpoint('./'))
+
 
     # is_correct = tf.equal(tf.argmax(model_second, 1), (tf.argmax(Y, 1)))
     # print(is_correct)
@@ -510,7 +530,6 @@ if __name__ == '__main__':
     #                                           X4: AvgTemp_Data_Test[i].reshape(-1, 30, 30, 1),
     #                                           X5: MaxTemp_Data_Test[i].reshape(-1, 30, 30, 1),
     #                                           X6: MinTemp_Data_Test[i].reshape(-1, 30, 30, 1), keep_prob: 1}))
-
 
 
 
