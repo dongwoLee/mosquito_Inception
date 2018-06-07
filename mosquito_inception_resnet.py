@@ -406,7 +406,7 @@ if __name__ == '__main__':
 	sess = tf.Session()
 	sess.run(init)
 
-	for epoch in range(300):
+	for epoch in range(500):
 
 		total_cost = 0
 
